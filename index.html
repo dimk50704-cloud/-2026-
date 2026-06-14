@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MS 主計算頁</title>
 
 <style>
 :root{--bg:#0f172a;--card:#111827;--muted:#94a3b8;--text:#e5e7eb;--line:#243041}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui}
-.wrap{max-width:1600px;margin:auto;padding:20px}
-.nav a{margin-right:10px;color:#7dd3fc;text-decoration:none}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text);font-family:ui-sans-serif,system-ui}
+.wrap{max-width:1680px;margin:0 auto;padding:24px}
+.nav{display:flex;gap:10px;margin-bottom:16px}
+.nav a{color:#bae6fd;text-decoration:none;background:#082f49;padding:8px 12px;border-radius:999px}
 .grid{display:grid;grid-template-columns:1.35fr 1.15fr;gap:16px}
-.stack{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--card);padding:16px;border-radius:14px;border:1px solid var(--line)}
+.stack{display:grid;gap:14px}
+.card{background:#111827;border-radius:16px;padding:16px;border:1px solid #243041}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .row4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 input,select{width:100%;padding:8px;background:#0b1220;color:white;border:1px solid #334155;border-radius:8px}
-.note{font-size:12px;color:#94a3b8;margin-top:6px}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
-<!-- ✅ 導航 -->
 <div class="nav">
 <a href="./index.html">主計算頁</a>
 <a href="./MS_狩獵經驗％計算.html">狩獵經驗%</a>
@@ -36,76 +37,65 @@ input,select{width:100%;padding:8px;background:#0b1220;color:white;border:1px so
 
 <div class="grid">
 
-<!-- ✅ ✅ ✅ 左側（輸入） -->
+<!-- ✅ 左側 -->
 <div class="stack">
 
-<!-- 基本 -->
 <div class="card">
 <h2>基本設定</h2>
-<div class="row3">
-<input id="level" placeholder="等級">
-<input id="pct" placeholder="經驗%">
-<select id="mode">
-<option value="normal">正常</option>
-<option value="1plus1">1+1</option>
-</select>
+<div class="row">
+<div><input id="level"></div>
+<div><input id="levelPct"></div>
 </div>
 </div>
 
-<!-- 狩獵 -->
 <div class="card">
 <h2>狩獵設定</h2>
 <div class="row3">
 <input id="baseRate" value="600">
-<input id="wheelExtra" value="0">
-<input id="huntingCount" value="0">
+<input id="wheelExtra">
+<input id="huntingCount">
 </div>
 </div>
 
-<!-- 每週 -->
 <div class="card">
-<h2>每日 / 每週項目</h2>
+<h2>每日 / 每週</h2>
 <div class="row3">
-<input id="totalWeeks" value="0">
-<input id="parkRunsPerWeek" value="0">
-<input id="extParkBonus" value="0">
-</div>
-
-<div class="note">
-⚠ 怪物公園：7次後，每超過一次 = 額外0.5次（最多7次）
+<input id="totalWeeks">
+<input id="parkRunsPerWeek">
+<input id="extParkBonus">
 </div>
 </div>
 
-<!-- ✅ 活動（不能移） -->
+<!-- ✅ 活動區 -->
 <div class="card">
 <h2>活動區</h2>
 <div class="row3">
-<input id="normalBoosterCount" placeholder="一般加速器">
-<input id="expressCount" placeholder="EXPRESS">
-<input id="steelCount" placeholder="鋼鐵草莓">
+<input id="normalBoosterCount">
+<input id="expressCount">
+<input id="steelCount">
 </div>
 
 <div class="row3">
-<input id="tomatoRuns" placeholder="番茄次數">
-<input id="tomatoAvg" placeholder="番茄分數">
-<input id="saunaHours" placeholder="桑拿">
+<input id="tomatoRuns">
+<input id="tomatoAvg">
+<input id="saunaHours">
 </div>
 </div>
 
-<!-- ✅ ✅ ✅ 水（最底 ✅ 正確） -->
+<!-- ✅ ✅ ✅ 水系統（已修好） -->
 <div class="card">
 <h2>水系統</h2>
 <div class="row4">
-<input id="w249" placeholder="249">
-<input id="w259" placeholder="259">
-<input id="w269" placeholder="269">
-<input id="w274" placeholder="274">
+<input id="w249">
+<input id="w259">
+<input id="w269">
+<input id="w274">
 </div>
 </div>
 
 </div>
 
-<!-- ✅ ✅ ✅ 右側（結果） -->
+<!-- ✅ 右側 -->
 <div class="stack">
 
 <div class="card">
@@ -122,29 +112,19 @@ input,select{width:100%;padding:8px;background:#0b1220;color:white;border:1px so
 function num(v){return Number(v)||0}
 
 function calc(){
+let rate=num(baseRate.value)+(120*0.3*(1+num(wheelExtra.value)/100))
 
-const baseRate = num(document.getElementById("baseRate").value)
-const wheel = num(document.getElementById("wheelExtra").value)
+let park=num(parkRunsPerWeek.value)
+let extra=Math.max(0,park-7)
+let bonus=Math.min(7,extra)
+let final=park+bonus*0.5
 
-const huntRate = baseRate + (120 * 0.3 * (1 + wheel / 100))
-
-let parkRuns = num(document.getElementById("parkRunsPerWeek").value)
-
-// ✅ ✅ 公園新算法
-let extra = Math.max(0, parkRuns - 7)
-let bonus = Math.min(7, extra)
-let finalRuns = parkRuns + bonus * 0.5
-
-document.getElementById("result").innerHTML = `
-狩獵倍率：${huntRate.toFixed(2)}%<br>
-怪物公園有效次數：${finalRuns.toFixed(2)}
-`
+result.innerHTML=
+"狩獵倍率："+rate.toFixed(2)+"%<br>"+
+"怪物公園："+final.toFixed(2)
 }
 
-document.querySelectorAll("input,select").forEach(e=>{
-e.addEventListener("input",calc)
-})
-
+document.querySelectorAll("input").forEach(e=>e.oninput=calc)
 calc()
 </script>
 
